@@ -8,22 +8,24 @@ template <typename T, typename F= Comparator<T>>
 class Set {
     Node <T>* root;
     int size;
+    Comparator<T> cmp;
 
-    void cleanup(Node<T>* &);  //Done
+    void cleanup(Node<T>*);  
+    void fixInsert(Node<T>*);
 
 public:
-    Set(); //Done
+    Set(); 
     Set(const Set<T>& s);
-    ~Set(); //Done
+    ~Set();
 
     Set<T>& operator =(const Set<T>&);
     void insert(const T&);
     void remove(const T&);
-    int sizeSet() const;      //Done
-    bool find(const T&, T* const) const;       //Done
+    int sizeSet() const;      
+    bool find(const T&, T* const) const;       
 
     template <typename U>
-    friend ostream& operator <<(ostream&, const Set<U>&); //Done
+    friend ostream& operator <<(ostream&, const Set<U>&);
 };
 
 
@@ -61,7 +63,7 @@ Set<T>& Set<T, F>::operator=(const Set<T>& s) {
 
 
 template <typename T, typename F>
-void Set<T,F>::cleanup(Node<T>*& n){
+void Set<T,F>::cleanup(Node<T>* n){
     if (n) {
         cleanup(n->left);
         cleanup(n->right);
@@ -77,11 +79,43 @@ Set<T, F>::~Set(){
     size = 0;
 }
 
+template<typename T, typename F>
+void Set<T, F>::fixInsert(Node<T>* n) {
+
+}
 
 
 template<typename T, typename F>
-void Set<T, F>::insert(const T& t)
-{
+void Set<T, F>::insert(const T& t){
+    int ok = 1;
+    Node<T>* newNode = new Node<T>(t);
+    Node<T>* n = root;
+    Node<T>* previous = NULL;
+
+    if (n == NULL)
+        root = newNode;
+    else {
+        while (n != NULL && ok == 1) {
+            previous = n;
+            if (cmp(t, n->info))
+                n = n->left;
+            else {
+                if (!cmp(t, n->info) && cmp(n->info,t))
+                    n = n->right;
+                else
+                    ok = 0;
+            }
+        }
+        if (ok) {
+            if (cmp(t,previous->info))
+                previous->left = newNode;
+            else
+                previous->right = newNode;
+            newNode->parent = previous;
+        }
+    }
+    if (ok)
+        fixInsert(newNode);
 }
 
 template<typename T, typename F>

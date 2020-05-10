@@ -1,2 +1,4 @@
 ﻿  main.cpp
-  set.vcxproj -> C:\Users\Diana\Desktop\SetTemplate\set\Debug\set.exe
+C:\Users\Diana\Desktop\SetTemplate\TemplateSet\set\Set.h(94,17): error C3861: 'i': identifier not found
+C:\Users\Diana\Desktop\SetTemplate\TemplateSet\set\Set.h(97,21): error C3861: 'i': identifier not found
+C:\Users\Diana\Desktop\SetTemplate\TemplateSet\set\Set.h(104,17): error C3861: 'i': identifier not found
