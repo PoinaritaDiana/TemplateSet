@@ -1,2 +1,4 @@
 C:\Users\Diana\Desktop\SetTemplate\set\Debug\set.exe
 C:\Users\Diana\Desktop\SetTemplate\set\Debug\set.pdb
+C:\Users\Diana\Desktop\SetTemplate\TemplateSet\set\Debug\set.exe
+C:\Users\Diana\Desktop\SetTemplate\TemplateSet\set\Debug\set.pdb
