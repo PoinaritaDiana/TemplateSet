@@ -11,6 +11,9 @@ public:
 	}
 };
 
+
+//Specializarea clasei Comparator pentru int, 
+//care sa considere doi intregi egali daca au aceeasi paritate
 template <>
 class Comparator<int> {
 public:
