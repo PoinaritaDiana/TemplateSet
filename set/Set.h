@@ -10,25 +10,26 @@ class Set {
     int size;
     Comparator<T> cmp;
 
-    void cleanup(Node<T>*);  
 
-    void fixInsert(Node<T>*);
-    void leftRotate(Node<T>*); 
-    void rightRotate(Node<T>*);
+    void cleanup(Node<T>*);  //Done
+
+    void fixInsert(Node<T>*); //Done
+    void leftRotate(Node<T>*); //Done
+    void rightRotate(Node<T>*); //Done
 
 public:
-    Set(); 
-    Set(const Set<T>& s);
-    ~Set();
+    Set(); //Done
+    Set(const Set<T>& s);  //Done
+    ~Set(); //Done
 
-    Set<T>& operator =(const Set<T>&);
-    void insert(const T&);
+    Set<T>& operator =(const Set<T>&); //Done
+    void insert(const T&); //Done
     void remove(const T&);
-    int sizeSet() const;      
-    bool find(const T&, T* const) const;       
+    int sizeSet() const;      //Done 
+    bool find(const T&, T* const) const;       //Done
 
     template <typename U>
-    friend ostream& operator <<(ostream&, const Set<U>&);
+    friend ostream& operator <<(ostream&, const Set<U>&);   //Done
 };
 
 
@@ -40,10 +41,16 @@ template<typename T, typename F>
 Set<T, F>::Set(const Set<T>& s){
     if (s.size == 0)
         return;
-    this->size = s.size;
-    Node<T>* n = root;
-    this->root = new Node<T>(n->info);
-
+    list <Node<T>*> queue;
+    queue.push_back(s.root);
+    while (queue.size()) {
+        this->insert(queue.front()->info);
+        if (queue.front()->left)
+            queue.push_back(queue.front()->left);
+        if (queue.front()->right)
+            queue.push_back(queue.front()->right);
+        queue.pop_front();
+    }
 }
 
 
@@ -57,10 +64,17 @@ Set<T>& Set<T, F>::operator=(const Set<T>& s) {
     if (s.size == 0) {
         return *this;
     }
-    this->size = s.size;
-    Node<T>* n = root;
-    this->root = new Node<T>(n->info);
-
+    
+    list <Node<T>*> queue;
+    queue.push_back(s.root);
+    while (queue.size()) {
+        this->insert(queue.front()->info);
+        if (queue.front()->left)
+            queue.push_back(queue.front()->left);
+        if (queue.front()->right)
+            queue.push_back(queue.front()->right);
+        queue.pop_front();
+    }
     return *this;
 }
 
@@ -181,8 +195,10 @@ void Set<T, F>::insert(const T& t){
     Node<T>* n = root;
     Node<T>* previous = NULL;
 
-    if (n == NULL)
+    if (n == NULL) {
         root = newNode;
+        this->size++;
+    }
     else {
         while (n != NULL && ok == 1) {
             previous = n;
@@ -196,6 +212,7 @@ void Set<T, F>::insert(const T& t){
             }
         }
         if (ok) {
+            this->size++;
             if (cmp(t,previous->info))
                 previous->left = newNode;
             else
@@ -234,13 +251,14 @@ ostream& operator<<(ostream& out, const Set<T>& s){
         list <Node<T>*> queue;
         queue.push_back(s.root);
         while (queue.size()) {
-            out << queue.front()->info << " ";
-            if (queue.front()->left)
-                queue.push_back(queue.front()->left);
-            if (queue.front()->right)
-                queue.push_back(queue.front()->right);
+            out << queue.front()->getInfo() << " ";
+            if (queue.front()->getLeft())
+                queue.push_back(queue.front()->getLeft());
+            if (queue.front()->getRight())
+                queue.push_back(queue.front()->getRight());
             queue.pop_front();
         }
     }
+    return out;
 }
 
