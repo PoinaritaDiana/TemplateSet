@@ -19,8 +19,6 @@ public:
     Node<T>* getLeft() const;
     Node<T>* getRight() const;
 
-
-
     friend class Set<T,Comparator<T>>;
 };
 

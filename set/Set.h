@@ -26,7 +26,7 @@ public:
     void insert(const T&); //Done
     void remove(const T&);
     int sizeSet() const;      //Done 
-    bool find(const T&, T* const) const;       //Done
+    bool find(const T&) const;       //Done
 
     template <typename U>
     friend ostream& operator <<(ostream&, const Set<U>&);   //Done
@@ -235,14 +235,18 @@ int Set<T, F>::sizeSet() const{
 }
 
 template<typename T, typename F>
-bool Set<T, F>::find(const T& t, T* const rd)const{
+bool Set<T, F>::find(const T& t)const{
+    Node<T>* rd = this->root;
     if (rd == NULL) return false;
-    else {
-        F comp;
-        if (!comp(rd->info,t) && !comp(t, rd->info)) return true;
-        if (!comp(rd->info, t) && comp(t, rd->info)) return find(t, rd->left);
-        if (comp(rd->info, t) && !comp(t, rd->info)) return find(t, rd->left);
+    while (rd) {
+        if (!cmp(rd->info, t) && !cmp(t, rd->info)) 
+            return true;
+        if (!cmp(rd->info, t) && cmp(t, rd->info)) 
+            rd=rd->left;
+        if (cmp(rd->info, t) && !cmp(t, rd->info)) 
+            rd=rd->right;
     }
+    return false;
 }
 
 template<typename T>
