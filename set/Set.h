@@ -22,7 +22,7 @@ class Set {
     void removeNode(Node<T>*);  //De facut
     Node<T>* minimum(const Node<T>*) const;
     Node<T>* search(const T&); 
-    void fixDelete(Node<T>*); //De facut
+    void fixDelete(Node<T>*); 
 
 public:
     Set(); 
@@ -31,7 +31,7 @@ public:
 
     Set<T>& operator =(const Set<T>&); 
     void insert(const T&); 
-    void remove(const T&);  //de facut
+    void remove(const T&); 
     int sizeSet() const;      
     bool find(const T&) const;       
 
@@ -309,7 +309,12 @@ Node<T>* Set<T, F>::search(const T& t) {
 //Metoda pentru stergere element din set
 template<typename T, typename F>
 void Set<T, F>::remove(const T& t){
-   F comp;
+    if (root == NULL)
+        return;
+
+    Node<T>* nodeDelete = search(i);
+    if (nodeDelete != NULL)
+        removeNode(nodeDelete);
 }
 
 
