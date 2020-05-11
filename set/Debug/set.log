@@ -1,2 +1,4 @@
 ﻿  main.cpp
-  set.vcxproj -> C:\Users\Diana\Desktop\SetTemplate\TemplateSet\set\Debug\set.exe
+C:\Users\Diana\Desktop\SetTemplate\TemplateSet\set\Set.h(21,1): error C2955: 'Node': use of class template requires template argument list
+C:\Users\Diana\Desktop\SetTemplate\TemplateSet\set\Node.h(8): message : see declaration of 'Node'
+C:\Users\Diana\Desktop\SetTemplate\TemplateSet\set\Set.h(40): message : see reference to class template instantiation 'Set<T,F>' being compiled

@@ -19,6 +19,11 @@ class Set {
 
     //Metode folosite pentru remove
 
+    void removeNode(Node<T>*);  //De facut
+    Node<T>* minimum(const Node<T>*) const;
+    Node<T>* search(const T&); 
+    void fixDelete(Node<T>*); //De facut
+
 public:
     Set(); 
     Set(const Set<T>& s);  
@@ -273,6 +278,33 @@ void Set<T, F>::insert(const T& t){
         fixInsert(newNode);
 }
 
+
+//Returneaza cel mai din stanga nod din subarborele drept al unui nod
+template<typename T, typename F>
+Node<T>* Set<T, F>::minimum(const Node<T>* n) const {
+    Node<T>* minNode = n;
+    while (minNode->left != NULL)
+        minNode = minNode->left;
+    return minNode;
+}
+
+
+//Metoda de cautare, doar ca returneaza nodul cu valoarea data
+template<typename T, typename F>
+Node<T>* Set<T, F>::search(const T& t) {
+    Node<T>* n = this->root;
+    while (n) {
+        if (!cmp(n->info, t) && !cmp(t, n->info))
+            return n;
+        else {
+            if (!cmp(n->info, t) && cmp(t, n->info))
+                n = n->left;
+            else
+                n = n->right;
+        }
+    }
+    return NULL;
+}
 
 //Metoda pentru stergere element din set
 template<typename T, typename F>
