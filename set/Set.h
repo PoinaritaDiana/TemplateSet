@@ -18,11 +18,10 @@ class Set {
     void rightRotate(Node<T>*); 
 
     //Metode folosite pentru remove
-
     void removeNode(Node<T>*);  
-    Node<T>* minimum(const Node<T>*) const;
+    Node<T>* minimum(Node<T>*) const;
     Node<T>* search(const T&); 
-    void fixDelete(Node<T>*);  //De facut
+    void fixDelete(Node<T>*);
 
 public:
     Set(); 
@@ -281,7 +280,7 @@ void Set<T, F>::insert(const T& t){
 
 //Returneaza cel mai din stanga nod din subarborele drept al unui nod
 template<typename T, typename F>
-Node<T>* Set<T, F>::minimum(const Node<T>* n) const {
+Node<T>* Set<T, F>::minimum(Node<T>* n) const {
     Node<T>* minNode = n;
     while (minNode->left != NULL)
         minNode = minNode->left;
@@ -343,7 +342,8 @@ void Set<T, F>::fixDelete(Node<T>* n) {
             // => n are culoarea neagra si sibling rosie
             //Adaug o culoare neagra extra la parent (parent devine black sau double-black)
             //Apelez fixDelete(parent) daca parent este double-black
-            if (sibling->color == 'b' && (sibling->left == NULL || sibling->left->color == 'b') && (sibling->right == NULL || sibling->right->color == 'b')){
+            if (sibling->color == 'b' && (sibling->left == NULL || sibling->left->color == 'b') && 
+                (sibling->right == NULL || sibling->right->color == 'b')){
                 sibling->color = 'r';
                 if (parent->color == 'b')
                     fixDelete(parent);
@@ -415,7 +415,7 @@ void Set<T, F>::removeNode(Node<T>* nodeDelete) {
         if (nodeDelete->left != NULL && nodeDelete->right != NULL) {
             //Interschimb valoarea celor doua noduri(replace si nodeDelete)
             //Apelez removeNode pentru replace (care va avea maxim un copil)
-            int val = nodeDelete->info;
+            T val = nodeDelete->info;
             nodeDelete->info = replace->info;
             replace->info = val;
             removeNode(replace);
@@ -482,9 +482,11 @@ void Set<T, F>::remove(const T& t){
     if (root == NULL)
         return;
 
-    Node<T>* nodeDelete = search(i);
-    if (nodeDelete != NULL)
+    Node<T>* nodeDelete = search(t);
+    if (nodeDelete != NULL) {
+        size--;
         removeNode(nodeDelete);
+    }
 }
 
 
@@ -497,16 +499,19 @@ int Set<T, F>::sizeSet() const{
 
 //Metoda care verifica daca un element se afla in set
 template<typename T, typename F>
-bool Set<T, F>::find(const T& t)const{
+bool Set<T, F>::find(const T& t) const{
     Node<T>* rd = this->root;
-    if (rd == NULL) return false;
+    if (rd == NULL) 
+        return false;
     while (rd) {
         if (!cmp(rd->info, t) && !cmp(t, rd->info)) 
             return true;
-        if (!cmp(rd->info, t) && cmp(t, rd->info)) 
-            rd=rd->left;
-        if (cmp(rd->info, t) && !cmp(t, rd->info)) 
-            rd=rd->right;
+        else {
+            if (!cmp(rd->info, t) && cmp(t, rd->info))
+                rd = rd->left;
+            else 
+                rd = rd->right;
+        }
     }
     return false;
 }
