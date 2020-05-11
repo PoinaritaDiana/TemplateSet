@@ -19,10 +19,10 @@ class Set {
 
     //Metode folosite pentru remove
 
-    void removeNode(Node<T>*);  //De facut
+    void removeNode(Node<T>*);  
     Node<T>* minimum(const Node<T>*) const;
     Node<T>* search(const T&); 
-    void fixDelete(Node<T>*); 
+    void fixDelete(Node<T>*);  //De facut
 
 public:
     Set(); 
@@ -306,7 +306,115 @@ Node<T>* Set<T, F>::search(const T& t) {
     return NULL;
 }
 
-//Metoda pentru stergere element din set
+
+template<typename T, typename F>
+void Set<T, F>::fixDelete(Node<T>* nodeDelete) {
+   
+}
+
+
+//Metoda pentru stergere element din set(dupa nod)
+template<typename T, typename F>
+void Set<T, F>::removeNode(Node<T>* nodeDelete) {
+    //Aflu nodul cu care va fi inlocuit nodeDelete
+    Node<T>* replace = NULL;
+    if (nodeDelete->right == NULL && nodeDelete->left == NULL)
+        replace = NULL;
+    if (nodeDelete->right == NULL && nodeDelete->left != NULL)
+        replace = nodeDelete->left;
+    if (nodeDelete->right != NULL && nodeDelete->left == NULL)
+        replace = nodeDelete->right;
+    if (nodeDelete->right != NULL && nodeDelete->left != NULL)
+        replace = minimum(nodeDelete->right);
+
+
+    //Daca nodeDelete este frunza(adica repalce=NULL)
+    if (replace == NULL) {
+        //Daca este radacina, inseamna ca set-ul devine gol
+        if (nodeDelete == root)
+            root = NULL;
+        else {
+            //Daca nodeDelete are culoarea neagra -> double black
+            //Trebuie sa verific daca se pastreaza proprietatile RBT
+            if (nodeDelete->color == 'b')
+                fixDelete(nodeDelete);
+            //Daca este rosu, doar il sterg pentru ca nu influenteaza proprietatile
+            //Sau dupa ce se rezolva fixDelete, in cazul in care este de culoare neagra
+            if (nodeDelete == nodeDelete->parent->left)
+                nodeDelete->parent->left = NULL;
+            else
+                nodeDelete->parent->right = NULL;
+            delete nodeDelete;
+        }
+    }
+    else {
+        //Daca nodeDelete are 2 copii
+        if (nodeDelete->left != NULL && nodeDelete->right != NULL) {
+            //Interschimb valoarea celor doua noduri(replace si nodeDelete)
+            //Apelez removeNode pentru replace (care va avea maxim un copil)
+            int val = nodeDelete->info;
+            nodeDelete->info = replace->info;
+            replace->info = val;
+            removeNode(replace);
+        }
+        //Daca nodeDelete are un copil
+        else {
+            //Daca nodul de sters este radacina
+            //Replace devine noua radacina (avand neaparat culoarea neagra)
+            if (nodeDelete == root) {
+                replace->parent = NULL;
+                replace->color = 'b';
+                root = replace;
+                delete nodeDelete;
+            }
+            else {
+                //Refac legaturile
+                if (nodeDelete == nodeDelete->parent->left)
+                    nodeDelete->parent->left = replace;
+                else
+                    nodeDelete->parent->right = replace;
+                if (replace != NULL)
+                    replace->parent = nodeDelete->parent;
+
+                //Daca replace negru si nodeDelete negru -> double black => trebuie sa verific prop
+                if ((replace->color == 'b' || replace == NULL) && nodeDelete->color == 'b') {
+                    nodeDelete->info = replace->info;
+                    if (replace == nodeDelete->left) {
+                        replace->right = nodeDelete->right;
+                        if (nodeDelete->right != NULL)
+                            nodeDelete->right->parent = replace;
+                    }
+                    else {
+                        replace->left = nodeDelete->left;
+                        if (nodeDelete->left != NULL)
+                            nodeDelete->left->parent = replace;
+                    }
+                    delete replace;
+                    fixDelete(nodeDelete);
+                }
+                else {
+                    //Daca au culori diferite, atunci mut replace si il colorez cu negru
+                    replace->color = 'b';
+                    if (replace == nodeDelete->left) {
+                        replace->right = nodeDelete->right;
+                        if (nodeDelete->right != NULL)
+                            nodeDelete->right->parent = replace;
+                    }
+                    else {
+                        replace->left = nodeDelete->left;
+                        if (nodeDelete->left != NULL)
+                            nodeDelete->left->parent = replace;
+                    }
+                    delete nodeDelete;
+                }
+            }
+        }
+    }
+
+}
+
+
+//Metoda pentru stergere element din set(dupa o anumita valoare)
 template<typename T, typename F>
 void Set<T, F>::remove(const T& t){
     if (root == NULL)
