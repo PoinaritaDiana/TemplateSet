@@ -308,8 +308,71 @@ Node<T>* Set<T, F>::search(const T& t) {
 
 
 template<typename T, typename F>
-void Set<T, F>::fixDelete(Node<T>* nodeDelete) {
-   
+void Set<T, F>::fixDelete(Node<T>* n) {
+    if (n == root)
+        return;
+
+    Node<T>* parent = n->parent;
+    Node<T>* sibling;
+    if (parent == NULL)
+        sibling = NULL;
+    if (n == n->parent->left)
+        sibling = parent->right;
+    else
+        sibling = parent->left;
+
+    if (sibling == NULL)
+        fixDelete(parent);
+    else {
+        //Daca sibling rosu : switchColor(parent,sibling) = {parent = red, sibling = black}
+        //Rotate(parent), transformandu-se in unul din cazurile cand sibling negru: fixDelete(n)
+        if (sibling->color == 'r') {
+            parent->color = 'r';
+            sibling->color = 'b';
+            //Daca sibling = left child of parent -> rightRotate(parent)
+            if (sibling == sibling->parent->left)
+                rightRotate(parent);
+            //Daca sibling = right child of parent -> leftRotate(parent)
+            else
+                leftRotate(parent);
+            fixDelete(n);
+        }
+        else {
+            //Daca sibling negru si ambii copii negru(sau NULL):
+            //Renuntam la "un negru" de la n(double black) si sibling(black)
+            // => n are culoarea neagra si sibling rosie
+            //Adaug o culoare neagra extra la parent (parent devine black sau double-black)
+            //Apelez fixDelete(parent) daca parent este double-black
+            if (sibling->color == 'b' && (sibling->left == NULL || sibling->left->color == 'b') && (sibling->right == NULL || sibling->right->color == 'b')){
+                sibling->color = 'r';
+                if (parent->color == 'b')
+                    fixDelete(parent);
+                else
+                    parent->color = 'b';
+            }
+            //Daca sibling negru si are cel putin un fiu de culoare rosie
+            else {
+                //Daca sibling negru si fiul stang este rosu (deci, fiul drept are culoarea neagra):
+                //sibling = red, leftChild = black (swapColor(leftChild,sibling))
+                //rightRotate(sibling) => se transforma in alt caz
+                if (sibling->left != NULL and sibling->left->color == 'r') {
+                    sibling->color = 'r';
+                    sibling->left->color = 'b';
+                    rightRotate(sibling);
+                    fixDelete(n);
+                }
+                //Daca sibling negru si fiul drept este rosu (deci, fiul stang are culoarea neagra):
+                //rightChild = black si swapColor(sibling, parent)
+                //leftRotate(parent)
+                if (sibling->right != NULL and sibling->right->color == 'r') {
+                    sibling->right->color = 'b';
+                    sibling->color = parent->color;
+                    parent->color = 'b';
+                    leftRotate(parent);
+                }
+            }
+        }
+    }
 }
 
 
@@ -410,7 +473,6 @@ void Set<T, F>::removeNode(Node<T>* nodeDelete) {
             }
         }
     }
-
 }
 
 
