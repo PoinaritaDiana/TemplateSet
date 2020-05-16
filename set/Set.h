@@ -8,8 +8,9 @@ template <typename T, typename F= Comparator<T>>
 class Set {
     Node <T>* root;
     int size;
-    Comparator<T> cmp;
+    F cmp;
 
+protected:
     void cleanup(Node<T>*);  
 
     //Metode folosite pentru insert
@@ -21,21 +22,21 @@ class Set {
     void removeNode(Node<T>*);  
     Node<T>* minimum(Node<T>*) const;
     Node<T>* search(const T&); 
-    void fixDelete(Node<T>*);
+    void fixRemove(Node<T>*);
 
 public:
     Set(); 
-    Set(const Set<T>& s);  
+    Set(const Set<T,F>&);  
     ~Set();
 
-    Set<T>& operator =(const Set<T>&); 
+    Set<T,F>& operator =(const Set<T,F>&); 
     void insert(const T&); 
     void remove(const T&); 
     int sizeSet() const;      
     bool find(const T&) const;       
 
-    template <typename U>
-    friend ostream& operator <<(ostream&, const Set<U>&);   
+    template <typename U,typename F>
+    friend ostream& operator <<(ostream&, const Set<U,F>&);   
 };
 
 
@@ -46,7 +47,7 @@ Set<T, F>::Set() :size(0), root(NULL) {}
 
 //Constructor de copiere
 template<typename T, typename F>
-Set<T, F>::Set(const Set<T>& s){
+Set<T, F>::Set(const Set<T,F>& s){
     if (s.size == 0)
         return;
     list <Node<T>*> queue;
@@ -84,7 +85,7 @@ Set<T, F>::~Set() {
 
 //Supraincarcare operator de atribuire "="
 template<typename T, typename F>
-Set<T>& Set<T, F>::operator=(const Set<T>& s) {
+Set<T,F>& Set<T, F>::operator=(const Set<T,F>& s) {
     if (&s == this) {
         return *this;
     }
@@ -307,7 +308,7 @@ Node<T>* Set<T, F>::search(const T& t) {
 
 
 template<typename T, typename F>
-void Set<T, F>::fixDelete(Node<T>* n) {
+void Set<T, F>::fixRemove(Node<T>* n) {
     if (n == root)
         return;
 
@@ -321,10 +322,10 @@ void Set<T, F>::fixDelete(Node<T>* n) {
         sibling = parent->left;
 
     if (sibling == NULL)
-        fixDelete(parent);
+        fixRemove(parent);
     else {
         //Daca sibling rosu : switchColor(parent,sibling) = {parent = red, sibling = black}
-        //Rotate(parent), transformandu-se in unul din cazurile cand sibling negru: fixDelete(n)
+        //Rotate(parent), transformandu-se in unul din cazurile cand sibling negru: fixRemove(n)
         if (sibling->color == 'r') {
             parent->color = 'r';
             sibling->color = 'b';
@@ -334,19 +335,19 @@ void Set<T, F>::fixDelete(Node<T>* n) {
             //Daca sibling = right child of parent -> leftRotate(parent)
             else
                 leftRotate(parent);
-            fixDelete(n);
+            fixRemove(n);
         }
         else {
             //Daca sibling negru si ambii copii negru(sau NULL):
             //Renuntam la "un negru" de la n(double black) si sibling(black)
             // => n are culoarea neagra si sibling rosie
             //Adaug o culoare neagra extra la parent (parent devine black sau double-black)
-            //Apelez fixDelete(parent) daca parent este double-black
+            //Apelez fixRemove(parent) daca parent este double-black
             if (sibling->color == 'b' && (sibling->left == NULL || sibling->left->color == 'b') && 
                 (sibling->right == NULL || sibling->right->color == 'b')){
                 sibling->color = 'r';
                 if (parent->color == 'b')
-                    fixDelete(parent);
+                    fixRemove(parent);
                 else
                     parent->color = 'b';
             }
@@ -359,7 +360,7 @@ void Set<T, F>::fixDelete(Node<T>* n) {
                     sibling->color = 'r';
                     sibling->left->color = 'b';
                     rightRotate(sibling);
-                    fixDelete(n);
+                    fixRemove(n);
                 }
                 //Daca sibling negru si fiul drept este rosu (deci, fiul stang are culoarea neagra):
                 //rightChild = black si swapColor(sibling, parent)
@@ -400,9 +401,9 @@ void Set<T, F>::removeNode(Node<T>* nodeDelete) {
             //Daca nodeDelete are culoarea neagra -> double black
             //Trebuie sa verific daca se pastreaza proprietatile RBT
             if (nodeDelete->color == 'b')
-                fixDelete(nodeDelete);
+                fixRemove(nodeDelete);
             //Daca este rosu, doar il sterg pentru ca nu influenteaza proprietatile
-            //Sau dupa ce se rezolva fixDelete, in cazul in care este de culoare neagra
+            //Sau dupa ce se rezolva fixRemove, in cazul in care este de culoare neagra
             if (nodeDelete == nodeDelete->parent->left)
                 nodeDelete->parent->left = NULL;
             else
@@ -453,7 +454,7 @@ void Set<T, F>::removeNode(Node<T>* nodeDelete) {
                             nodeDelete->left->parent = replace;
                     }
                     delete replace;
-                    fixDelete(nodeDelete);
+                    fixRemove(nodeDelete);
                 }
                 else {
                     //Daca au culori diferite, atunci mut replace si il colorez cu negru
@@ -518,8 +519,8 @@ bool Set<T, F>::find(const T& t) const{
 
 
 //Supraincarcarea operatorului de afisare "<<"
-template<typename T>
-ostream& operator<<(ostream& out, const Set<T>& s){
+template<typename T, typename F>
+ostream& operator<<(ostream& out, const Set<T,F>& s){
     if (s.root) {
         list <Node<T>*> queue;
         queue.push_back(s.root);

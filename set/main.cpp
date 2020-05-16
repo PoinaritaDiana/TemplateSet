@@ -24,13 +24,13 @@ void setTests() {
     assert(setChar.sizeSet() == 6); 
 
     //Test pentru a verifica daca un element se afla in set
-    assert(setChar.find('a') == 1);
-    assert(setChar.find('m') == 0);
+    assert(setChar.find('a') == true);
+    assert(setChar.find('m') == false);
 
     //Test pentru verificare eliminare
     setChar.remove('b');
     assert(setChar.sizeSet() == 5);
-    assert(setChar.find('b') == 0);
+    assert(setChar.find('b') == false);
 
     //Teste pentru tipul int
     Set <int> sInt;
@@ -43,12 +43,16 @@ void setTests() {
   
     Set <int> csInt;
     csInt.insert(1);
+
     //Test operator de atribuire
     //Acum csInt contine doar elementul 2, deci poate fi inserat 3
     //pentru ca au paritati diferite (deci size=2)
     csInt = sInt;
     csInt.insert(3);
     assert(csInt.sizeSet() == 2); 
+
+    csInt.remove(2);
+    assert(csInt.sizeSet() == 1);
 
     //Teste pentru tipul string
     Set <string> setString;
@@ -65,7 +69,7 @@ void setTests() {
     //Test pentru constructorul de copiere
     Set <string> cSetString = setString;
     assert(cSetString.sizeSet() == 4);
-    assert(cSetString.find("programare") == 1);
+    assert(cSetString.find("programare") == true);
 
     //Test destructor
     cSetString.~Set();
@@ -77,5 +81,6 @@ int main(){
 
     setTests();
     cout << "Testele au trecut";
+  
     return 0;
 }
