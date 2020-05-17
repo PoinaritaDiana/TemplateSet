@@ -51,7 +51,9 @@ void setTests() {
     csInt.insert(3);
     assert(csInt.sizeSet() == 2); 
 
-    csInt.remove(2);
+    //4 si 2 au aceeasi paritate, deci se considera egale
+    //se sterge 2, astfel size-ul devine 1
+    csInt.remove(4);
     assert(csInt.sizeSet() == 1);
 
     //Teste pentru tipul string

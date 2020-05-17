@@ -18,7 +18,7 @@ template <>
 class Comparator<int> {
 public:
 	bool operator() (const int& i1, const int& i2) const {
-		if (i1 % 2== i2 % 2)
+		if (i1 % 2 == i2 % 2)
 			return false;
 		else
 			return true;
